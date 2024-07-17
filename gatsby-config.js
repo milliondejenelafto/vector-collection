@@ -1,17 +1,32 @@
-/**
- * @type {import('gatsby').GatsbyConfig}
- */
 module.exports = {
   siteMetadata: {
-    title: `Vector Collection`,
-    siteUrl: `https://www.yourdomain.tld`
+    title: "Vector Collection",
+    description: "A platform for collecting and sharing cultural vector graphics.",
+    author: "@kitila",
   },
-  plugins: ["gatsby-plugin-postcss", "gatsby-plugin-image", "gatsby-plugin-sharp", "gatsby-transformer-sharp", {
-    resolve: 'gatsby-source-filesystem',
-    options: {
-      "name": "images",
-      "path": "./src/images/"
+  plugins: [
+    `gatsby-plugin-react-helmet`,
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `vectors`,
+        path: `${__dirname}/src/assets/vectors`,
+      },
     },
-    __key: "images"
-  }]
-};
+    `gatsby-transformer-sharp`,
+    `gatsby-plugin-sharp`,
+    `gatsby-plugin-postcss`,
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `vector-collection`,
+        short_name: `vcollection`,
+        start_url: `/`,
+        background_color: `#ffffff`,
+        theme_color: `#663399`,
+        display: `minimal-ui`,
+        icon: `src/assets/images/icon.png`,
+      },
+    },
+  ],
+}
