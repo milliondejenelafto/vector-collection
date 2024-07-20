@@ -1,31 +1,111 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { navigate } from "gatsby";
 import "../../styles/global.css";
 import logo from "../../assets/images/logo.png"; // Import the logo image
+import { checkAuth, logout } from "../../services/auth";
+
 
 const Layout = ({ children }) => {
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkUserLoginStatus = async () => {
+      try {
+        // Check for user data in URL
+        const params = new URLSearchParams(window.location.search);
+        const userData = params.get('user');
+        if (userData) {
+          const user = JSON.parse(decodeURIComponent(userData));
+          localStorage.setItem('user', JSON.stringify(user));
+          setUserLoggedIn(true);
+          setUser(user);
+          // Remove user data from URL
+          params.delete('user');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+          // Check user authentication from server
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+            setUserLoggedIn(true);
+          } else {
+            const authStatus = await checkAuth();
+            if (authStatus.isAuthenticated) {
+              setUser(authStatus.user);
+              setUserLoggedIn(true);
+              localStorage.setItem('user', JSON.stringify(authStatus.user));
+            } else {
+              navigate('/signin'); // Redirect to sign-in page if not logged in
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error checking user login status:", error);
+        navigate('/signin'); // Redirect to sign-in page on error
+      }
+    };
+
+    checkUserLoginStatus();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/logout', {
+        method: 'GET',
+        credentials: 'include' // Include cookies with the request
+      });
+      if (response.ok) {
+        localStorage.removeItem('user');
+        setUserLoggedIn(false);
+        setUser(null);
+        navigate('/signin');
+      } else {
+        console.error("Error logging out");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-        <div>
+        <div className="flex items-center">
+          <img src={logo} alt="Logo" className="h-10 mr-3" /> {/* Logo image */}
           <h1 className="text-3xl font-bold">Vector Collection</h1>
-          <nav className="mt-2">
-            <a href="/" className="text-gray-300 hover:text-white mx-2">
-              Home
-            </a>
-            <a href="/upload" className="text-gray-300 hover:text-white mx-2">
-              Upload
-            </a>
-            <a href="/admin" className="text-gray-300 hover:text-white mx-2">
-              Admin
-            </a>
-            <a href="/profile" className="text-gray-300 hover:text-white mx-2">
-              Profile
-            </a>
-          </nav>
         </div>
-        <div>
-          <img src={logo} alt="Logo" className="h-10" /> {/* Logo image */}
-        </div>
+        <nav className="mt-2">
+          {userLoggedIn ? (
+            <>
+              <a href="/" className="text-gray-300 hover:text-white mx-2">
+                Home
+              </a>
+              <a href="/upload" className="text-gray-300 hover:text-white mx-2">
+                Upload
+              </a>
+              <a href="/admin" className="text-gray-300 hover:text-white mx-2">
+                Admin
+              </a>
+              <a href="/profile" className="text-gray-300 hover:text-white mx-2">
+                Profile
+              </a>
+              <button
+                onClick={logout}
+                className="text-gray-300 hover:text-white mx-2 bg-red-500 px-3 py-2 rounded"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <a
+              href="/signin"
+              className="text-gray-300 hover:text-white mx-2 bg-blue-500 px-3 py-2 rounded"
+            >
+              Sign In
+            </a>
+          )}
+        </nav>
       </header>
       <main className="flex-grow container mx-auto p-4">{children}</main>
       <footer className="bg-gray-800 text-white p-4 text-center">
