@@ -4,7 +4,6 @@ import "../../styles/global.css";
 import logo from "../../assets/images/logo.png"; // Import the logo image
 import { checkAuth, logout } from "../../services/auth";
 
-
 const Layout = ({ children }) => {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
@@ -36,37 +35,44 @@ const Layout = ({ children }) => {
               setUserLoggedIn(true);
               localStorage.setItem('user', JSON.stringify(authStatus.user));
             } else {
-              navigate('/signin'); // Redirect to sign-in page if not logged in
+              const path = window.location.pathname;
+              if (path !== '/signin' && path !== '/signup') {
+                navigate('/signin'); // Redirect to sign-in page if not logged in and not already on sign-in or sign-up page
+              }
             }
           }
         }
       } catch (error) {
         console.error("Error checking user login status:", error);
-        navigate('/signin'); // Redirect to sign-in page on error
+        const path = window.location.pathname;
+        if (path !== '/signin' && path !== '/signup') {
+          navigate('/signin'); // Redirect to sign-in page on error if not already on sign-in or sign-up page
+        }
       }
     };
-
+  
     checkUserLoginStatus();
   }, []);
+  
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/logout', {
-        method: 'GET',
-        credentials: 'include' // Include cookies with the request
-      });
-      if (response.ok) {
-        localStorage.removeItem('user');
-        setUserLoggedIn(false);
-        setUser(null);
-        navigate('/signin');
-      } else {
-        console.error("Error logging out");
-      }
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     const response = await fetch('/logout', {
+  //       method: 'GET',
+  //       credentials: 'include' // Include cookies with the request
+  //     });
+  //     if (response.ok) {
+  //       localStorage.removeItem('user');
+  //       setUserLoggedIn(false);
+  //       setUser(null);
+  //       navigate('/signin');
+  //     } else {
+  //       console.error("Error logging out");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error logging out:", error);
+  //   }
+  // };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -98,12 +104,20 @@ const Layout = ({ children }) => {
               </button>
             </>
           ) : (
-            <a
-              href="/signin"
-              className="text-gray-300 hover:text-white mx-2 bg-blue-500 px-3 py-2 rounded"
-            >
-              Sign In
-            </a>
+            <>
+              <a
+                href="/signin"
+                className="text-gray-300 hover:text-white mx-2 bg-blue-500 px-3 py-2 rounded"
+              >
+                Sign In
+              </a>
+              <a
+                href="/signup"
+                className="text-gray-300 hover:text-white mx-2 bg-green-500 px-3 py-2 rounded"
+              >
+                Sign Up
+              </a>
+            </>
           )}
         </nav>
       </header>
