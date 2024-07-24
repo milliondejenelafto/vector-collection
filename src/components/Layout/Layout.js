@@ -5,74 +5,43 @@ import logo from "../../assets/images/logo.png"; // Import the logo image
 import { checkAuth, logout } from "../../services/auth";
 
 const Layout = ({ children }) => {
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const checkUserLoginStatus = async () => {
       try {
-        // Check for user data in URL
-        const params = new URLSearchParams(window.location.search);
-        const userData = params.get('user');
-        if (userData) {
-          const user = JSON.parse(decodeURIComponent(userData));
-          localStorage.setItem('user', JSON.stringify(user));
-          setUserLoggedIn(true);
-          setUser(user);
-          // Remove user data from URL
-          params.delete('user');
-          window.history.replaceState({}, document.title, window.location.pathname);
+        const authStatus = await checkAuth();
+        if (authStatus.isAuthenticated) {
+          setUser(authStatus.user);
+          localStorage.setItem('user', JSON.stringify(authStatus.user));
         } else {
-          // Check user authentication from server
-          const storedUser = localStorage.getItem('user');
-          if (storedUser) {
-            setUser(JSON.parse(storedUser));
-            setUserLoggedIn(true);
-          } else {
-            const authStatus = await checkAuth();
-            if (authStatus.isAuthenticated) {
-              setUser(authStatus.user);
-              setUserLoggedIn(true);
-              localStorage.setItem('user', JSON.stringify(authStatus.user));
-            } else {
-              const path = window.location.pathname;
-              if (path !== '/signin' && path !== '/signup') {
-                navigate('/signin'); // Redirect to sign-in page if not logged in and not already on sign-in or sign-up page
-              }
-            }
+          const path = window.location.pathname;
+          if (path !== '/signin' && path !== '/signup') {
+            navigate('/signin'); // Redirect to sign-in page if not logged in and not on sign-in or sign-up page
           }
         }
       } catch (error) {
         console.error("Error checking user login status:", error);
         const path = window.location.pathname;
         if (path !== '/signin' && path !== '/signup') {
-          navigate('/signin'); // Redirect to sign-in page on error if not already on sign-in or sign-up page
+          navigate('/signin'); // Redirect to sign-in page on error if not on sign-in or sign-up page
         }
       }
     };
-  
+
     checkUserLoginStatus();
   }, []);
-  
 
-  // const handleLogout = async () => {
-  //   try {
-  //     const response = await fetch('/logout', {
-  //       method: 'GET',
-  //       credentials: 'include' // Include cookies with the request
-  //     });
-  //     if (response.ok) {
-  //       localStorage.removeItem('user');
-  //       setUserLoggedIn(false);
-  //       setUser(null);
-  //       navigate('/signin');
-  //     } else {
-  //       console.error("Error logging out");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error logging out:", error);
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      await logout();
+      localStorage.removeItem('user');
+      setUser(null);
+      navigate('/signin');
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -82,7 +51,7 @@ const Layout = ({ children }) => {
           <h1 className="text-3xl font-bold">Vector Collection</h1>
         </div>
         <nav className="mt-2">
-          {userLoggedIn ? (
+          {user ? (
             <>
               <a href="/" className="text-gray-300 hover:text-white mx-2">
                 Home
@@ -97,7 +66,7 @@ const Layout = ({ children }) => {
                 Profile
               </a>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="text-gray-300 hover:text-white mx-2 bg-red-500 px-3 py-2 rounded"
               >
                 Logout

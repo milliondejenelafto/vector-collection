@@ -5,6 +5,10 @@ const API_URL = 'http://localhost:5000'; // Replace with your backend URL
 export const checkAuth = async () => {
   try {
     const response = await fetch(`${API_URL}/auth/check-auth`, { credentials: 'include' });
+    if (response.status === 401) {
+      // Handle unauthorized error, maybe redirect to sign-in
+      return { isAuthenticated: false };
+    }
     const data = await response.json();
     return data;
   } catch (error) {
