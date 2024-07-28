@@ -6,10 +6,11 @@ export const checkAuth = async () => {
   try {
     const response = await fetch(`${API_URL}/auth/check-auth`, { credentials: 'include' });
     if (response.status === 401) {
-      // Handle unauthorized error, maybe redirect to sign-in
+      console.log('Unauthorized');
       return { isAuthenticated: false };
     }
     const data = await response.json();
+    console.log('Auth Data:', data);
     return data;
   } catch (error) {
     console.error('Error checking auth status:', error);

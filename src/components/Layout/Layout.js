@@ -16,15 +16,15 @@ const Layout = ({ children }) => {
           localStorage.setItem('user', JSON.stringify(authStatus.user));
         } else {
           const path = window.location.pathname;
-          if (path !== '/signin' && path !== '/signup') {
-            navigate('/signin'); // Redirect to sign-in page if not logged in and not on sign-in or sign-up page
+          if (path !== '/auth' && path !== '/signup') {
+            navigate('/auth'); // Redirect to sign-in page if not logged in and not on sign-in or sign-up page
           }
         }
       } catch (error) {
         console.error("Error checking user login status:", error);
         const path = window.location.pathname;
-        if (path !== '/signin' && path !== '/signup') {
-          navigate('/signin'); // Redirect to sign-in page on error if not on sign-in or sign-up page
+        if (path !== '/auth' && path !== '/signup') {
+          navigate('/auth'); // Redirect to sign-in page on error if not on sign-in or sign-up page
         }
       }
     };
@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
       await logout();
       localStorage.removeItem('user');
       setUser(null);
-      navigate('/signin');
+      navigate('/auth');
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -75,7 +75,7 @@ const Layout = ({ children }) => {
           ) : (
             <>
               <a
-                href="/signin"
+                href="/auth"
                 className="text-gray-300 hover:text-white mx-2 bg-blue-500 px-3 py-2 rounded"
               >
                 Sign In
