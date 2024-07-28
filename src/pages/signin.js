@@ -1,10 +1,31 @@
-import React, { useState } from 'react';
-import Layout from '../components/Layout/Layout';
-import { localLogin, googleLogin } from '../services/auth';
+import React, { useState } from "react";
+import Layout from "../components/Layout/Layout";
+import { localLogin, googleLogin } from "../services/auth";
+//
+import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
+import { Cloudinary } from "@cloudinary/url-gen";
+import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
 
 const SignInPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  //
+  const [publicId, setPublicId] = useState("");
+  // enter cloud name
+  const [cloudName] = useState("");
+  // enter preset
+  const [uploadPreset] = useState("");
+  const [uwConfig] = useState({
+    cloudName,
+    uploadPreset,
+  });
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName,
+    },
+  });
+
+  const myImage = cld.image(publicId);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,9 +37,15 @@ const SignInPage = () => {
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-4">Sign In</h1>
         <p className="mb-6">Please sign in to access your account.</p>
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+        <form
+          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+          onSubmit={handleSubmit}
+        >
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -31,7 +58,10 @@ const SignInPage = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
@@ -59,6 +89,28 @@ const SignInPage = () => {
             </button>
           </div>
         </form>
+        <div className="App">
+          <h3>Cloudinary Upload Widget Example</h3>
+          <CloudinaryUploadWidget
+            uwConfig={uwConfig}
+            setPublicId={setPublicId}
+          />
+          <p>
+            <a
+              href="https://cloudinary.com/documentation/upload_widget"
+              target="_blank"
+            >
+              Upload Widget User Guide
+            </a>
+          </p>
+          <div style={{ width: "800px" }}>
+            <AdvancedImage
+              style={{ maxWidth: "100%" }}
+              cldImg={myImage}
+              plugins={[responsive(), placeholder()]}
+            />
+          </div>
+        </div>
       </div>
     </Layout>
   );

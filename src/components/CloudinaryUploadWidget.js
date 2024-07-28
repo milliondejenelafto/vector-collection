@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 // Create a context to manage the script loading state
 const CloudinaryScriptContext = createContext();
@@ -26,7 +26,9 @@ function CloudinaryUploadWidget({ uwConfig, setPublicId }) {
   }, [loaded]);
 
   const initializeCloudinaryWidget = () => {
+    console.log("here1");
     if (loaded) {
+      console.log("here2");
       var myWidget = window.cloudinary.createUploadWidget(
         uwConfig,
         (error, result) => {
@@ -36,7 +38,7 @@ function CloudinaryUploadWidget({ uwConfig, setPublicId }) {
           }
         }
       );
-
+      console.log("here3");
       document.getElementById("upload_widget").addEventListener(
         "click",
         function () {
@@ -44,6 +46,7 @@ function CloudinaryUploadWidget({ uwConfig, setPublicId }) {
         },
         false
       );
+      console.log("here4");
     }
   };
 

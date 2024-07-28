@@ -6,10 +6,15 @@ const UploadPage = () => {
     <Layout>
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-4">Upload Vector</h1>
-        <p className="mb-6">Use the form below to upload your vector graphics.</p>
+        <p className="mb-6">
+          Use the form below to upload your vector graphics.
+        </p>
         <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="vectorName">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="vectorName"
+            >
               Vector Name
             </label>
             <input
@@ -20,7 +25,10 @@ const UploadPage = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="vectorFile">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="vectorFile"
+            >
               Upload File
             </label>
             <input
