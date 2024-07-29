@@ -1,8 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 
 const IndexPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [vectors, setVectors] = useState([]);
+  const [filteredVectors, setFilteredVectors] = useState([]);
+
+  useEffect(() => {
+    // Fetch all vectors from the backend
+    const fetchVectors = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/auth/all-vectors');
+        if (response.ok) {
+          const data = await response.json();
+          setVectors(data);
+          setFilteredVectors(data);
+        } else {
+          throw new Error('Failed to fetch vectors');
+        }
+      } catch (error) {
+        console.error("Error fetching vectors:", error);
+      }
+    };
+
+    fetchVectors();
+  }, []);
+
+  useEffect(() => {
+    // Filter vectors based on search term
+    const results = vectors.filter(vector =>
+      vector.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vector.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredVectors(results);
+  }, [searchTerm, vectors]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -48,8 +79,17 @@ const IndexPage = () => {
         </div>
 
         <div className="text-center">
-          {/* Here you would map through the filtered vector graphics and display them */}
           <p className="text-gray-500">Search results for: <span className="font-bold">{searchTerm}</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredVectors.map(vector => (
+              <div key={vector._id} className="bg-white shadow-md rounded p-4">
+                <img src={vector.fileUrl} alt={vector.title} className="w-full h-48 object-cover mb-2" /> {/* Adjusted image size */}
+                <h2 className="text-lg font-bold">{vector.title}</h2>
+                <p className="text-gray-700">{vector.description}</p>
+                <p className="text-gray-500 text-sm">Uploaded by: {vector.userId.displayName}</p> {/* Display uploader's name */}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Layout>

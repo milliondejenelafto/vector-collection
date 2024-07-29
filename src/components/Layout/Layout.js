@@ -3,9 +3,10 @@ import { navigate } from "gatsby";
 import "../../styles/global.css";
 import logo from "../../assets/images/logo.png"; // Import the logo image
 import { checkAuth, logout } from "../../services/auth";
+import { useAuth } from '../../context/auth-context';
 
 const Layout = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const { isAuthenticated, user, setIsAuthenticated, setUser } = useAuth();
 
   useEffect(() => {
     const checkUserLoginStatus = async () => {
@@ -13,6 +14,7 @@ const Layout = ({ children }) => {
         const authStatus = await checkAuth();
         if (authStatus.isAuthenticated) {
           setUser(authStatus.user);
+          setIsAuthenticated(true);
           localStorage.setItem('user', JSON.stringify(authStatus.user));
         } else {
           const path = window.location.pathname;
@@ -30,13 +32,14 @@ const Layout = ({ children }) => {
     };
 
     checkUserLoginStatus();
-  }, []);
+  }, [setIsAuthenticated, setUser]);
 
   const handleLogout = async () => {
     try {
       await logout();
       localStorage.removeItem('user');
       setUser(null);
+      setIsAuthenticated(false);
       navigate('/auth');
     } catch (error) {
       console.error("Error logging out:", error);
@@ -51,7 +54,7 @@ const Layout = ({ children }) => {
           <h1 className="text-3xl font-bold">Vector Collection</h1>
         </div>
         <nav className="mt-2">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <a href="/" className="text-gray-300 hover:text-white mx-2">
                 Home
@@ -73,20 +76,12 @@ const Layout = ({ children }) => {
               </button>
             </>
           ) : (
-            <>
-              <a
-                href="/auth"
-                className="text-gray-300 hover:text-white mx-2 bg-blue-500 px-3 py-2 rounded"
-              >
-                Sign In
-              </a>
-              <a
-                href="/signup"
-                className="text-gray-300 hover:text-white mx-2 bg-green-500 px-3 py-2 rounded"
-              >
-                Sign Up
-              </a>
-            </>
+            <a
+              href="/auth"
+              className="text-gray-300 hover:text-white mx-2 bg-blue-500 px-3 py-2 rounded"
+            >
+              Sign In
+            </a>
           )}
         </nav>
       </header>

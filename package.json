@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "vector-collection",
-  "author": "Arsanyos",
+  "author": "Million D.",
   "keywords": [
     "gatsby"
   ],
@@ -15,7 +15,10 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.13.0",
+    "@cloudinary/url-gen": "^1.19.0",
     "autoprefixer": "^10.4.19",
+    "cloudinary-core": "^2.13.1",
     "gatsby": "^5.13.5",
     "gatsby-plugin-image": "^3.13.1",
     "gatsby-plugin-manifest": "^5.13.1",

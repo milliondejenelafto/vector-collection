@@ -5,6 +5,7 @@ const ProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [image, setImage] = useState("");
+  const [userVectors, setUserVectors] = useState([]);
 
   useEffect(() => {
     // Fetch user data from local storage
@@ -21,7 +22,25 @@ const ProfilePage = () => {
       }
     };
 
+    // Fetch user-uploaded vectors from the backend
+    const fetchUserVectors = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/auth/user-vectors', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserVectors(data);
+        } else {
+          throw new Error('Failed to fetch user vectors');
+        }
+      } catch (error) {
+        console.error("Error fetching user vectors:", error);
+      }
+    };
+
     fetchUserData();
+    fetchUserVectors();
   }, []);
 
   return (
@@ -33,17 +52,32 @@ const ProfilePage = () => {
         <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-lg mx-auto text-center">
           <img src={image} alt="Profile" className="w-32 h-32 rounded-full mx-auto mb-4" />
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
               Name
             </label>
-            <p className="text-gray-700">{name}</p>
+            <p id="name" className="text-gray-700">{name}</p>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
               Email
             </label>
-            <p className="text-gray-700">{email}</p>
+            <p id="email" className="text-gray-700">{email}</p>
           </div>
+        </div>
+
+        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-lg mx-auto">
+          <h2 className="text-2xl font-bold mb-4 text-center">Your Uploaded Images</h2>
+          {userVectors.length > 0 ? (
+            userVectors.map((vector) => (
+              <div key={vector._id} className="mb-4">
+                <img src={vector.fileUrl} alt={vector.title} className="w-full h-48 object-cover mb-2" /> {/* Adjusted image size */}
+                <p className="text-gray-700 font-bold">{vector.title}</p>
+                <p className="text-gray-700">{vector.description}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-700 text-center">No uploaded images found.</p>
+          )}
         </div>
       </div>
     </Layout>

@@ -1,98 +1,105 @@
+// src/pages/UploadPage.js
 import React, { useState } from "react";
 import Layout from "../components/Layout/Layout";
+import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
+import cloudinary from "../cloudinaryConfig";
+import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
+
+const API_URL = 'http://localhost:5000';
 
 const UploadPage = () => {
-  const [vectorName, setVectorName] = useState("");
-  const [vectorFile, setVectorFile] = useState(null);
-  const [message, setMessage] = useState("");
+  const [publicId, setPublicId] = useState("");
+  const [imageName, setImageName] = useState("");
+  const [imageDescription, setImageDescription] = useState("");
+  const [privateImageUrl, setPrivateImageUrl] = useState("");
+  const [cloudName] = useState("dt93lij1r"); // Enter your cloud name
+  const [uploadPreset] = useState("ml_default"); // Enter your upload preset
+  const [uwConfig] = useState({
+    cloudName,
+    uploadPreset,
+    resourceType: "auto", // Automatically determines the file type
+    clientAllowedFormats: ["svg", "blend"], // Allow only SVG and Blender files
+  });
 
-  const handleNameChange = (e) => {
-    setVectorName(e.target.value);
-  };
+  const myImage = cloudinary.image(publicId);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    const validTypes = ['image/svg+xml', 'application/postscript', 'application/pdf', 'application/illustrator'];
-    if (file && validTypes.includes(file.type)) {
-      setVectorFile(file);
-      setMessage("");
-    } else {
-      setVectorFile(null);
-      setMessage("Please upload a valid vector file (SVG, AI, EPS, PDF).");
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!vectorName || !vectorFile) {
-      setMessage("Please provide both vector name and file.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("title", vectorName);
-    formData.append("vector", vectorFile);
-
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/auth/upload-vector", {
-        method: "POST",
-        body: formData,
-        credentials: "include", // Include credentials for authentication
+      const response = await fetch(`${API_URL}/auth/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', 
+        body: JSON.stringify({
+          title: imageName,
+          description: imageDescription,
+          fileUrl: privateImageUrl, // Sending secure_url to backend
+          fileName: publicId, // Optional: sending publicId as fileName
+          // Other fields as required
+        }),
       });
-      const result = await response.json();
       if (response.ok) {
-        setMessage("Vector uploaded successfully!");
-        setVectorName("");
-        setVectorFile(null);
+        console.log('Image data saved successfully');
       } else {
-        setMessage(`Error: ${result.error}`);
+        throw new Error('Failed to save image data');
       }
     } catch (error) {
-      console.error("There was an error uploading the vector:", error);
-      setMessage("Error uploading vector. Please try again.");
+      console.error('Error saving image data:', error);
     }
   };
 
   return (
     <Layout>
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-4">Upload Vector</h1>
-        <p className="mb-6">Use the form below to upload your vector graphics.</p>
-        {message && <div className="mb-4 text-red-500">{message}</div>}
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+        <h1 className="text-3xl font-bold mb-4">Upload Image</h1>
+        <form onSubmit={handleSubmit} className="mb-6">
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="vectorName">
-              Vector Name
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageName">
+              Image Name
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="vectorName"
               type="text"
-              placeholder="Enter vector name"
-              value={vectorName}
-              onChange={handleNameChange}
+              id="imageName"
+              value={imageName}
+              onChange={(e) => setImageName(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="vectorFile">
-              Upload File
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageDescription">
+              Image Description
             </label>
-            <input
+            <textarea
+              id="imageDescription"
+              value={imageDescription}
+              onChange={(e) => setImageDescription(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="vectorFile"
-              type="file"
-              onChange={handleFileChange}
+              required
             />
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Upload
-            </button>
+          <div className="mb-6">
+            <CloudinaryUploadWidget
+              uwConfig={uwConfig}
+              setPublicId={setPublicId}
+              setPrivateImageUrl={setPrivateImageUrl} // Correctly pass setPrivateImageUrl as a prop
+            />
           </div>
+          <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Save Image Data
+          </button>
         </form>
+        {publicId && (
+          <div style={{ width: "800px" }}>
+            <AdvancedImage
+              style={{ maxWidth: "100%" }}
+              cldImg={myImage}
+              plugins={[responsive(), placeholder()]}
+            />
+          </div>
+        )}
       </div>
     </Layout>
   );
@@ -100,4 +107,4 @@ const UploadPage = () => {
 
 export default UploadPage;
 
-export const Head = () => <title>Upload Vector</title>;
+export const Head = () => <title>Upload Image</title>;
