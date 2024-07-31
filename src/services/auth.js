@@ -1,6 +1,6 @@
 import { navigate } from 'gatsby';
 
-const API_URL = 'http://localhost:5000'; // Replace with your backend URL
+const API_URL = 'https://superlative-melba-d8c53c.netlify.app'; // Replace with your backend URL
 
 export const checkAuth = async () => {
   try {

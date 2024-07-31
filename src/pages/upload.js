@@ -5,7 +5,7 @@ import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
 import cloudinary from "../cloudinaryConfig";
 import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://superlative-melba-d8c53c.netlify.app';
 
 const UploadPage = () => {
   const [publicId, setPublicId] = useState("");
