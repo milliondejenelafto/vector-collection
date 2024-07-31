@@ -25,7 +25,7 @@ const ProfilePage = () => {
     // Fetch user-uploaded vectors from the backend
     const fetchUserVectors = async () => {
       try {
-        const response = await fetch('http://localhost:5000/auth/user-vectors', {
+        const response = await fetch('https://vector-collection-backend.vercel.app/auth/user-vectors', {
           credentials: 'include',
         });
         if (response.ok) {
