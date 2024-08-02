@@ -10,7 +10,9 @@ const IndexPage = () => {
     // Fetch all vectors from the backend
     const fetchVectors = async () => {
       try {
-        const response = await fetch('https://vector-collection-backend.vercel.app/auth/all-vectors');
+        const response = await fetch('https://vector-collection-backend.vercel.app/auth/all-vectors', {
+          credentials: 'include',
+        } );
         if (response.ok) {
           const data = await response.json();
           setVectors(data);
