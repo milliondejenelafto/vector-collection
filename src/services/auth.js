@@ -1,3 +1,4 @@
+// auth.js (frontend)
 import { navigate } from 'gatsby';
 
 const API_URL = 'https://vector-collection-backend.vercel.app'; // Replace with your backend URL
