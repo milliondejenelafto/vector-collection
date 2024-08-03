@@ -4,7 +4,10 @@ const API_URL = 'https://vector-collection-backend.vercel.app'; // Replace with 
 
 export const checkAuth = async () => {
   try {
-    const response = await fetch(`${API_URL}/auth/check-auth`, { credentials: 'include' });
+    const response = await fetch(`${API_URL}/auth/check-auth`, {method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }, credentials: 'include' });
     if (response.status === 401) {
       console.log('Unauthorized');
       return { isAuthenticated: false };
