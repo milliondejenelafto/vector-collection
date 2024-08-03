@@ -1,4 +1,3 @@
-// auth.js (frontend)
 import { navigate } from 'gatsby';
 
 const API_URL = 'https://vector-collection-backend.vercel.app'; // Replace with your backend URL
@@ -31,12 +30,13 @@ export const localLogin = async (email, password) => {
     });
     const data = await response.json();
     if (response.ok) {
-      navigate('/');
+      return data.user; // Return user data
     } else {
       throw new Error(data.message);
     }
   } catch (error) {
     console.error('Error logging in:', error);
+    return null;
   }
 };
 
