@@ -1,25 +1,45 @@
 // context/auth-context.js
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { checkAuth } from '../services/auth';
+import { getToken, storeToken } from '../utils/auth';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (token, user) => {
-    localStorage.setItem('token', token);
-    setUser(user);
-    setIsAuthenticated(true);
-  };
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = getToken();
+      if (token) {
+        const authStatus = await checkAuth();
+        if (authStatus.isAuthenticated) {
+          setUser(authStatus.user);
+          setIsAuthenticated(true);
+        }
+      }
+      setLoading(false);
+    };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setIsAuthenticated(false);
-  };
+    const captureTokenFromURL = () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        storeToken(token);
+        window.history.replaceState({}, document.title, window.location.pathname); // Remove token from URL
+        initializeAuth();
+      } else {
+        initializeAuth();
+      }
+    };
+
+    captureTokenFromURL();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user,login,logout, setIsAuthenticated, setUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

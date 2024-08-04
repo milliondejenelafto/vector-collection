@@ -1,55 +1,17 @@
-// src/components/layout.js
-import React, { useEffect } from "react";
+// src/components/Layout/Layout.js
+import React from "react";
 import { navigate } from "gatsby";
-import { checkAuth, logout as authLogout } from "../../services/auth";
 import { useAuth } from '../../context/auth-context';
-import { storeToken, getToken, removeToken } from '../../utils/auth';
+import { removeToken } from '../../utils/auth';
 import logo from "../../assets/images/logo.png"; // Import the logo image
+import { logout } from '../../services/auth';
 
 const Layout = ({ children }) => {
-  const { isAuthenticated, user, setIsAuthenticated, setUser } = useAuth();
-
-  useEffect(() => {
-    const captureTokenFromURL = () => {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token');
-      if (token) {
-        console.log('Token captured from URL:', token);
-        storeToken(token);
-        window.history.replaceState({}, document.title, window.location.pathname); // Remove token from URL
-      }
-    };
-
-    const checkUserLoginStatus = async () => {
-      try {
-        captureTokenFromURL();
-        const authStatus = await checkAuth();
-        if (authStatus.isAuthenticated) {
-          console.log('User is authenticated:', authStatus.user);
-          setUser(authStatus.user);
-          setIsAuthenticated(true);
-        } else {
-          console.log('User is not authenticated');
-          const path = window.location.pathname;
-          if (path !== '/auth' && path !== '/signup') {
-            navigate('/auth'); // Redirect to sign-in page if not logged in and not on sign-in or sign-up page
-          }
-        }
-      } catch (error) {
-        console.error("Error checking user login status:", error);
-        const path = window.location.pathname;
-        if (path !== '/auth' && path !== '/signup') {
-          navigate('/auth'); // Redirect to sign-in page on error if not on sign-in or sign-up page
-        }
-      }
-    };
-
-    checkUserLoginStatus();
-  }, [setIsAuthenticated, setUser]);
+  const { isAuthenticated, user, setIsAuthenticated, setUser, loading } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await authLogout();
+      await logout();
       removeToken();
       setUser(null);
       setIsAuthenticated(false);
@@ -67,7 +29,9 @@ const Layout = ({ children }) => {
           <h1 className="text-3xl font-bold">Vector Collection</h1>
         </div>
         <nav className="mt-2">
-          {isAuthenticated ? (
+          {loading ? (
+            <div className="text-gray-300">Loading...</div>
+          ) : isAuthenticated ? (
             <>
               <a href="/" className="text-gray-300 hover:text-white mx-2">
                 Home

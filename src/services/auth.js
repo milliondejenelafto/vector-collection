@@ -58,7 +58,7 @@ export const logout = async () => {
   try {
     localStorage.removeItem('token'); // Remove the token
     localStorage.removeItem('user');
-    navigate('/signin');
+    navigate('/');
   } catch (error) {
     console.error('Error logging out:', error);
   }
