@@ -4,13 +4,14 @@ const API_URL = 'https://vector-collection-backend.vercel.app'; // Replace with 
 
 export const checkAuth = async () => {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/auth/check-auth`, {
       method: 'GET',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
-     });
+    });
     if (response.status === 401) {
       console.log('Unauthorized');
       return { isAuthenticated: false };
@@ -31,11 +32,11 @@ export const localLogin = async (email, password) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include', // Include cookies for session management
+      body: JSON.stringify({ email, password })
     });
     const data = await response.json();
     if (response.ok) {
+      localStorage.setItem('token', data.token); // Store the JWT
       return data.user; // Return user data
     } else {
       throw new Error(data.message);
@@ -52,16 +53,9 @@ export const googleLogin = () => {
 
 export const logout = async () => {
   try {
-    const response = await fetch(`${API_URL}/auth/logout`, {
-      method: 'GET',
-      credentials: 'include' // Include cookies for session management
-    });
-    if (response.ok) {
-      localStorage.removeItem('user');
-      navigate('/signin');
-    } else {
-      throw new Error('Failed to logout');
-    }
+    localStorage.removeItem('token'); // Remove the token
+    localStorage.removeItem('user');
+    navigate('/signin');
   } catch (error) {
     console.error('Error logging out:', error);
   }

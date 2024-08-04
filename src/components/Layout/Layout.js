@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { navigate } from "gatsby";
-import "../../styles/global.css";
-import logo from "../../assets/images/logo.png"; // Import the logo image
-import { checkAuth, logout } from "../../services/auth";
+import { checkAuth, logout as authLogout } from "../../services/auth";
 import { useAuth } from '../../context/auth-context';
+import logo from "../../assets/images/logo.png"; // Import the logo image
 
 const Layout = ({ children }) => {
   const { isAuthenticated, user, setIsAuthenticated, setUser } = useAuth();
@@ -15,7 +14,6 @@ const Layout = ({ children }) => {
         if (authStatus.isAuthenticated) {
           setUser(authStatus.user);
           setIsAuthenticated(true);
-          localStorage.setItem('user', JSON.stringify(authStatus.user));
         } else {
           const path = window.location.pathname;
           if (path !== '/auth' && path !== '/signup') {
@@ -36,8 +34,7 @@ const Layout = ({ children }) => {
 
   const handleLogout = async () => {
     try {
-      await logout();
-      localStorage.removeItem('user');
+      await authLogout();
       setUser(null);
       setIsAuthenticated(false);
       navigate('/auth');
@@ -87,7 +84,7 @@ const Layout = ({ children }) => {
       </header>
       <main className="flex-grow container mx-auto p-4">{children}</main>
       <footer className="bg-gray-800 text-white p-4 text-center">
-        <p>© {new Date().getFullYear()}, Built by Lafto Partners</p>
+        <p>© {new Date().getFullYear()}, Built by Lafto Militia</p>
       </footer>
     </div>
   );

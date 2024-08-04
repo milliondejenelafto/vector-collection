@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { checkAuth } from '../services/auth';
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
@@ -7,20 +6,20 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchAuthStatus = async () => {
-      const authStatus = await checkAuth();
-      if (authStatus.isAuthenticated) {
-        setUser(authStatus.user);
-        setIsAuthenticated(true);
-      }
-    };
+  const login = (token, user) => {
+    localStorage.setItem('token', token);
+    setUser(user);
+    setIsAuthenticated(true);
+  };
 
-    fetchAuthStatus();
-  }, []);
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, user, setUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );
