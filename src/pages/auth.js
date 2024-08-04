@@ -22,7 +22,7 @@ const AuthPage = ({ isSignUp, setIsSignUp }) => {
       // Sign-up Logic
       //=========================
       try {
-        const response = await fetch('https://vector-collection-backend.vercel.app//auth/register', {
+        const response = await fetch('https://vector-collection-backend.vercel.app/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

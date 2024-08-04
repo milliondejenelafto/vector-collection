@@ -5,7 +5,7 @@ import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
 import cloudinary from "../cloudinaryConfig";
 import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
 
-const API_URL = 'https://vector-collection-backend.vercel.app/';
+const API_URL = 'https://vector-collection-backend.vercel.app';
 
 const UploadPage = () => {
   const [publicId, setPublicId] = useState("");
@@ -26,7 +26,7 @@ const UploadPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(`${API_URL}/auth/upload`, {
+      const response = await fetch(`${API_URL}/vector/upload`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
