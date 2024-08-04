@@ -1,15 +1,27 @@
+// src/components/layout.js
 import React, { useEffect } from "react";
 import { navigate } from "gatsby";
 import { checkAuth, logout as authLogout } from "../../services/auth";
 import { useAuth } from '../../context/auth-context';
+import { storeToken, getToken, removeToken } from '../../utils/auth';
 import logo from "../../assets/images/logo.png"; // Import the logo image
 
 const Layout = ({ children }) => {
   const { isAuthenticated, user, setIsAuthenticated, setUser } = useAuth();
 
   useEffect(() => {
+    const captureTokenFromURL = () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        storeToken(token);
+        window.history.replaceState({}, document.title, window.location.pathname); // Remove token from URL
+      }
+    };
+
     const checkUserLoginStatus = async () => {
       try {
+        captureTokenFromURL();
         const authStatus = await checkAuth();
         if (authStatus.isAuthenticated) {
           setUser(authStatus.user);
@@ -35,6 +47,7 @@ const Layout = ({ children }) => {
   const handleLogout = async () => {
     try {
       await authLogout();
+      removeToken();
       setUser(null);
       setIsAuthenticated(false);
       navigate('/auth');

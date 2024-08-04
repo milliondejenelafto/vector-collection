@@ -1,29 +1,32 @@
 import { navigate } from 'gatsby';
-
+import { getToken } from '../utils/auth';
 const API_URL = 'https://vector-collection-backend.vercel.app'; // Replace with your backend URL
 
 export const checkAuth = async () => {
+  const token = getToken();
+  if (!token) {
+    return { isAuthenticated: false };
+  }
+
   try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/auth/check-auth`, {
-      method: 'GET',
+    const response = await fetch('https://vector-collection-backend.vercel.app/auth/check-auth', {
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
-      },
+      }
     });
-    if (response.status === 401) {
-      console.log('Unauthorized');
+
+    if (response.ok) {
+      const data = await response.json();
+      return { isAuthenticated: data.isAuthenticated, user: data.user };
+    } else {
       return { isAuthenticated: false };
     }
-    const data = await response.json();
-    console.log('Auth Data:', data);
-    return data;
   } catch (error) {
-    console.error('Error checking auth status:', error);
+    console.error("Error checking auth status:", error);
     return { isAuthenticated: false };
   }
 };
+
 
 export const localLogin = async (email, password) => {
   try {
