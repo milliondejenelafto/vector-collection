@@ -26,8 +26,9 @@ const ProfilePage = () => {
     const fetchUserVectors = async () => {
       try {
         const response = await fetch('https://vector-collection-backend.vercel.app/auth/user-vectors', {
-          credentials: 'include',
-        });
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }});
         if (response.ok) {
           const data = await response.json();
           setUserVectors(data);
