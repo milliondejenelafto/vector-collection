@@ -14,6 +14,7 @@ const Layout = ({ children }) => {
       const params = new URLSearchParams(window.location.search);
       const token = params.get('token');
       if (token) {
+        console.log('Token captured from URL:', token);
         storeToken(token);
         window.history.replaceState({}, document.title, window.location.pathname); // Remove token from URL
       }
@@ -24,9 +25,11 @@ const Layout = ({ children }) => {
         captureTokenFromURL();
         const authStatus = await checkAuth();
         if (authStatus.isAuthenticated) {
+          console.log('User is authenticated:', authStatus.user);
           setUser(authStatus.user);
           setIsAuthenticated(true);
         } else {
+          console.log('User is not authenticated');
           const path = window.location.pathname;
           if (path !== '/auth' && path !== '/signup') {
             navigate('/auth'); // Redirect to sign-in page if not logged in and not on sign-in or sign-up page
