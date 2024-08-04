@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
-import { fetchUserVectors, fetchUserProfile } from "../services/vectors";
+import { fetchUserVectors, fetchUserProfile } from "../services/auth";
 
 const ProfilePage = () => {
   const [name, setName] = useState("");

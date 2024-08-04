@@ -63,3 +63,27 @@ export const logout = async () => {
     console.error('Error logging out:', error);
   }
 };
+
+// Fetch user profile
+export const fetchUserProfile = async () => {
+  try {
+    const token = localStorage.getItem('token'); // Get token from local storage
+    const response = await fetch(`${API_URL}/auth/user`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Include the token in the headers
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user profile');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
+};

@@ -64,7 +64,7 @@ const Layout = ({ children }) => {
       </header>
       <main className="flex-grow container mx-auto p-4">{children}</main>
       <footer className="bg-gray-800 text-white p-4 text-center">
-        <p>© {new Date().getFullYear()}, Built by Lafto Militia</p>
+        <p>© {new Date().getFullYear()}, Built by Lafto Partners</p>
       </footer>
     </div>
   );
