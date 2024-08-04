@@ -1,8 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
+import { fetchAllVectors } from "../services/vectors";
+import { useAuth } from "../context/auth-context";
 
 const IndexPage = () => {
+  const { isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [vectors, setVectors] = useState([]);
+
+  useEffect(() => {
+    const loadVectors = async () => {
+      try {
+        const response = await fetchAllVectors();
+        setVectors(response);
+      } catch (error) {
+        console.error("Error fetching vectors:", error);
+      }
+    };
+
+    loadVectors();
+  }, []);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -13,7 +30,7 @@ const IndexPage = () => {
       <div className="container mx-auto py-16">
         <h1 className="text-4xl font-bold mb-4 text-center">Welcome to the Vector Collection</h1>
         <p className="text-lg text-gray-700 mb-6 text-center">Discover and share cultural vector graphics.</p>
-        
+
         <div className="flex justify-center mb-6">
           <input
             type="text"
@@ -48,8 +65,17 @@ const IndexPage = () => {
         </div>
 
         <div className="text-center">
-          {/* Here you would map through the filtered vector graphics and display them */}
-          <p className="text-gray-500">Search results for: <span className="font-bold">{searchTerm}</span></p>
+          {vectors.length > 0 ? (
+            vectors.map((vector) => (
+              <div key={vector._id}>
+                <h2>{vector.title}</h2>
+                <p>{vector.description}</p>
+                {/* Display other vector details */}
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No vectors available.</p>
+          )}
         </div>
       </div>
     </Layout>

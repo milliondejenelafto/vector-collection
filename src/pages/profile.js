@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
+import { fetchUserVectors, fetchUserProfile } from "../services/vectors";
 
 const ProfilePage = () => {
   const [name, setName] = useState("");
@@ -8,10 +9,10 @@ const ProfilePage = () => {
   const [userVectors, setUserVectors] = useState([]);
 
   useEffect(() => {
-    // Fetch user data from local storage
+    // Fetch user data from the server
     const fetchUserData = async () => {
       try {
-        const userData = JSON.parse(localStorage.getItem('user')); // Replace with server fetch if needed
+        const userData = await fetchUserProfile();
         if (userData) {
           setName(userData.displayName || "");
           setEmail(userData.email || "");
@@ -23,25 +24,17 @@ const ProfilePage = () => {
     };
 
     // Fetch user-uploaded vectors from the backend
-    const fetchUserVectors = async () => {
+    const loadUserVectors = async () => {
       try {
-        const response = await fetch('https://vector-collection-backend.vercel.app/vector/user-vectors', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }});
-        if (response.ok) {
-          const data = await response.json();
-          setUserVectors(data);
-        } else {
-          throw new Error('Failed to fetch user vectors');
-        }
+        const data = await fetchUserVectors();
+        setUserVectors(data);
       } catch (error) {
         console.error("Error fetching user vectors:", error);
       }
     };
 
     fetchUserData();
-    fetchUserVectors();
+    loadUserVectors();
   }, []);
 
   return (
