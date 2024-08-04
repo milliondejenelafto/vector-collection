@@ -7,7 +7,6 @@ export const fetchAllVectors = async () => {
     const response = await fetch(`${API_URL}/vector/all-vectors`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` // Include the token in the headers
       },
     });

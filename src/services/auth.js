@@ -71,7 +71,6 @@ export const fetchUserProfile = async () => {
     const response = await fetch(`${API_URL}/auth/user`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` // Include the token in the headers
       },
     });
@@ -84,6 +83,29 @@ export const fetchUserProfile = async () => {
     return data;
   } catch (error) {
     console.error('Error fetching user profile:', error);
+    throw error;
+  }
+};
+
+// Fetch vectors uploaded by the authenticated user
+export const fetchUserVectors = async () => {
+  try {
+    const token = localStorage.getItem('token'); // Get token from local storage
+    const response = await fetch(`${API_URL}/auth/user-vectors`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}` // Include the token in the headers
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user vectors');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching user vectors:', error);
     throw error;
   }
 };
