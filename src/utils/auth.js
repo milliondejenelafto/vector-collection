@@ -1,24 +1,13 @@
-// utils/auth.js
-export const storeToken = (token) => {
-    if (typeof window !== 'undefined') {
-      console.log('Storing token:', token);
-      localStorage.setItem('jwtToken', token);
-    }
-  };
-  
-  export const getToken = () => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('jwtToken');
-      console.log('Retrieved token:', token);
-      return token;
-    }
-    return null;
-  };
-  
-  export const removeToken = () => {
-    if (typeof window !== 'undefined') {
-      console.log('Removing token');
-      localStorage.removeItem('jwtToken');
-    }
-  };
-  
+import Cookies from 'js-cookie';
+
+export const setToken = (token) => {
+  Cookies.set('token', token, { secure: true, sameSite: 'strict', expires: 7 });
+};
+
+export const getToken = () => {
+  return Cookies.get('token');
+};
+
+export const removeToken = () => {
+  Cookies.remove('token');
+};

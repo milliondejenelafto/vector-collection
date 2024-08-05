@@ -1,18 +1,14 @@
 import { navigate } from 'gatsby';
-import { getToken } from '../utils/auth';
-const API_URL = 'https://vector-collection-backend.vercel.app'; // Replace with your backend URL
+
+const API_URL = 'https://vector-collection-backend.vercel.app';
 
 export const checkAuth = async () => {
-  const token = getToken();
-  if (!token) {
-    return { isAuthenticated: false };
-  }
-
   try {
-    const response = await fetch('https://vector-collection-backend.vercel.app/auth/check-auth', {
+    const response = await fetch(`${API_URL}/auth/check-auth`, {
+      credentials: 'include', // Include cookies
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        'Content-Type': 'application/json',
+      },
     });
 
     if (response.ok) {
@@ -27,7 +23,6 @@ export const checkAuth = async () => {
   }
 };
 
-
 export const localLogin = async (email, password) => {
   try {
     const response = await fetch(`${API_URL}/auth/login`, {
@@ -35,11 +30,11 @@ export const localLogin = async (email, password) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
+      credentials: 'include', // Include cookies
     });
     const data = await response.json();
     if (response.ok) {
-      localStorage.setItem('token', data.token); // Store the JWT
       return data.user; // Return user data
     } else {
       throw new Error(data.message);
@@ -56,9 +51,16 @@ export const googleLogin = () => {
 
 export const logout = async () => {
   try {
-    localStorage.removeItem('token'); // Remove the token
-    localStorage.removeItem('user');
-    navigate('/');
+    const response = await fetch(`${API_URL}/auth/logout`, {
+      method: 'GET',
+      credentials: 'include' // Include cookies
+    });
+    if (response.ok) {
+      localStorage.removeItem('user');
+      navigate('/signin');
+    } else {
+      throw new Error('Failed to logout');
+    }
   } catch (error) {
     console.error('Error logging out:', error);
   }
@@ -67,11 +69,11 @@ export const logout = async () => {
 // Fetch user profile
 export const fetchUserProfile = async () => {
   try {
-    const token = localStorage.getItem('token'); // Get token from local storage
     const response = await fetch(`${API_URL}/auth/user`, {
       method: 'GET',
+      credentials: 'include', // Include cookies
       headers: {
-        'Authorization': `Bearer ${token}` // Include the token in the headers
+        'Content-Type': 'application/json',
       },
     });
 
@@ -87,14 +89,14 @@ export const fetchUserProfile = async () => {
   }
 };
 
-// Fetch vectors uploaded by the authenticated user
+// Fetch user vectors
 export const fetchUserVectors = async () => {
   try {
-    const token = localStorage.getItem('token'); // Get token from local storage
-    const response = await fetch(`${API_URL}/auth/user-vectors`, {
+    const response = await fetch(`${API_URL}/vector/user-vectors`, {
       method: 'GET',
+      credentials: 'include', // Include cookies
       headers: {
-        'Authorization': `Bearer ${token}` // Include the token in the headers
+        'Content-Type': 'application/json',
       },
     });
 
