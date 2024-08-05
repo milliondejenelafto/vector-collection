@@ -56,6 +56,7 @@ export const logout = async () => {
       credentials: 'include' // Include cookies
     });
     if (response.ok) {
+      removeToken();
       localStorage.removeItem('user');
       navigate('/signin');
     } else {
