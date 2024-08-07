@@ -90,25 +90,3 @@ export const fetchUserProfile = async () => {
   }
 };
 
-// Fetch user vectors
-export const fetchUserVectors = async () => {
-  try {
-    const response = await fetch(`${API_URL}/vector/user-vectors`, {
-      method: 'GET',
-      credentials: 'include', // Include cookies
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch user vectors');
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching user vectors:', error);
-    throw error;
-  }
-};

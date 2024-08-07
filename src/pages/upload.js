@@ -1,11 +1,10 @@
-// src/pages/UploadPage.js
 import React, { useState } from "react";
 import Layout from "../components/Layout/Layout";
 import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
 import cloudinary from "../cloudinaryConfig";
 import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
 
-const API_URL = 'https://localhost:5000';
+const API_URL = 'http://localhost:5000'; // Changed to http
 
 const UploadPage = () => {
   const [publicId, setPublicId] = useState("");
@@ -31,7 +30,7 @@ const UploadPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', 
+        credentials: 'include',
         body: JSON.stringify({
           title: imageName,
           description: imageDescription,

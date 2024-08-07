@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { navigate } from "gatsby";
 import { useAuth } from '../../context/auth-context';
 import { removeToken } from '../../utils/auth';
-import logo from "../../assets/images/logo.png"; // Import the logo image
 import { logout } from '../../services/auth';
 
 const API_URL = 'http://localhost:5000';
@@ -70,8 +69,8 @@ const Layout = ({ children }) => {
     <div className="flex flex-col min-h-screen">
       <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
         <div className="flex items-center">
-          <img src={logo} alt="Logo" className="h-10 mr-3" /> {/* Logo image */}
-          <h1 className="text-3xl font-bold">Vector Collection</h1>
+         
+          <h1 className="text-3xl font-bold">Gado Assets</h1>
         </div>
         <nav className="mt-2">
           {loading ? (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
-import { fetchUserVectors, fetchUserProfile } from "../services/auth";
-
+import {  fetchUserProfile } from "../services/auth";
+import {fetchUserVectors } from "../services/vectors"
 const ProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
