@@ -1,6 +1,6 @@
 import { navigate } from 'gatsby';
-
-const API_URL = 'https://vector-collection-backend.vercel.app';
+import {removeToken} from '../utils/auth'
+const API_URL = 'http://localhost:5000';
 
 export const checkAuth = async () => {
   try {
@@ -53,12 +53,11 @@ export const logout = async () => {
   try {
     const response = await fetch(`${API_URL}/auth/logout`, {
       method: 'GET',
-      credentials: 'include' // Include cookies
+      credentials: 'include',
     });
     if (response.ok) {
-      removeToken();
-      localStorage.removeItem('user');
-      navigate('/signin');
+      removeToken(); // Remove the token from cookies
+      navigate('/auth');
     } else {
       throw new Error('Failed to logout');
     }
@@ -66,7 +65,6 @@ export const logout = async () => {
     console.error('Error logging out:', error);
   }
 };
-
 // Fetch user profile
 export const fetchUserProfile = async () => {
   try {
@@ -83,6 +81,8 @@ export const fetchUserProfile = async () => {
     }
 
     const data = await response.json();
+    console.log("data.........")
+    console.log(data)
     return data;
   } catch (error) {
     console.error('Error fetching user profile:', error);

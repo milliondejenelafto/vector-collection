@@ -13,6 +13,8 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const userData = await fetchUserProfile();
+        console.log("profile")
+        console.log(userData)
         if (userData) {
           setName(userData.displayName || "");
           setEmail(userData.email || "");

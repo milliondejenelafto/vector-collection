@@ -1,4 +1,4 @@
-const API_URL = 'https://vector-collection-backend.vercel.app';
+const API_URL = 'https://localhost:5000';
 
 // Fetch all vectors
 export const fetchAllVectors = async () => {

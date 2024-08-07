@@ -1,13 +1,16 @@
 // src/components/Layout/Layout.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { navigate } from "gatsby";
 import { useAuth } from '../../context/auth-context';
 import { removeToken } from '../../utils/auth';
 import logo from "../../assets/images/logo.png"; // Import the logo image
 import { logout } from '../../services/auth';
 
+const API_URL = 'http://localhost:5000';
+
 const Layout = ({ children }) => {
   const { isAuthenticated, user, setIsAuthenticated, setUser, loading } = useAuth();
+  const [initialized, setInitialized] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -20,6 +23,48 @@ const Layout = ({ children }) => {
       console.error("Error logging out:", error);
     }
   };
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const response = await fetch(`${API_URL}/auth/check-auth`, {
+          credentials: 'include', // Include cookies
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+        
+          const data = await response.json();
+          console.log("here........")
+          console.log(response)
+          console.log(data)
+          setIsAuthenticated(data.isAuthenticated);
+          setUser(data.user);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setInitialized(true);
+      }
+    };
+
+    if (!initialized) {
+      checkAuthStatus();
+    }
+  }, [initialized, setIsAuthenticated, setUser]);
+
+  useEffect(() => {
+    if (initialized && !loading && !isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [initialized, loading, isAuthenticated]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -64,7 +109,7 @@ const Layout = ({ children }) => {
       </header>
       <main className="flex-grow container mx-auto p-4">{children}</main>
       <footer className="bg-gray-800 text-white p-4 text-center">
-        <p>© {new Date().getFullYear()}, Built by Lafto Partners</p>
+        <p>© {new Date().getFullYear()}, Built by Gado Assets</p>
       </footer>
     </div>
   );

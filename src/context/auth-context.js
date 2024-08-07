@@ -1,3 +1,4 @@
+// src/context/auth-context.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { checkAuth } from '../services/auth';
 import { getToken, setToken, removeToken } from '../utils/auth';
